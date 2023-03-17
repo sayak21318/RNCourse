@@ -1,44 +1,30 @@
-import { StatusBar } from "expo-status-bar";
-import {
-  Button,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  ScrollView,
-  FlatList,
-} from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
 import React, { useState } from "react";
 import GoalItem from "./components/GoalItem";
 import GoalInput from "./components/GoalInput";
 
 export default App = () => {
-  const [enterGoalText, setEnterGoalText] = useState("");
   const [courseGoals, setCourseGoals] = useState([]);
 
-  const addGoalHandler = () => {
+  const addGoalHandler = (enteredText) => {
     setCourseGoals((currentCourseGoals) => [
       ...currentCourseGoals,
-      { text: enterGoalText, id: Math.random().toString() },
+      {
+        text: enteredText,
+        id: Math.random().toString(),
+      },
     ]);
   };
 
-
+  const deleteGoalHandler = (id) => {
+    setCourseGoals((currentCourseGoals) => {
+      return currentCourseGoals.filter((goal) => goal.id !== id);
+    });
+  };
 
   return (
     <View style={styles.appContainer}>
-      {/* <View style={styles.inputContainer}>
-        <TextInput
-          onChangeText={(val) => setEnterGoalText(val)}
-          style={styles.textInput}
-          placeholder="Your course goal"
-        />
-        <Button onPress={addGoalHandler} title="Add goal" />
-      </View> */}
-      <GoalInput
-        addGoalHandler={addGoalHandler}
-        setEnterGoalText={setEnterGoalText}
-      />
+      <GoalInput onAddGoal={addGoalHandler} />
       <View style={styles.goalsContainer}>
         <FlatList
           data={courseGoals}
@@ -46,7 +32,9 @@ export default App = () => {
             return item.id;
           }}
           renderItem={(itemData) => {
-            return <GoalItem itemData={itemData} />;
+            return (
+              <GoalItem onDeleteItem={deleteGoalHandler} itemData={itemData} />
+            );
           }}
         />
       </View>
@@ -60,9 +48,8 @@ const styles = StyleSheet.create({
     padding: 50,
     paddingHorizontal: 16,
   },
- 
+
   goalsContainer: {
     flex: 5,
   },
-  
 });
